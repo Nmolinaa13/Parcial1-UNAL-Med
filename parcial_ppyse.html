@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parcial — Partidos Políticos y Sistemas Electorales</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rojo: #B91C1C;
+    --rojo-oscuro: #7F1D1D;
+    --rojo-claro: #DC2626;
+    --rojo-suave: #FEE2E2;
+    --crema: #FEFCE8;
+    --crema-oscuro: #FEF9C3;
+    --crema-borde: #FDE68A;
+    --texto: #1C1917;
+    --texto-suave: #44403C;
+    --blanco: #FFFFFF;
+    --gris-claro: #F5F5F4;
+    --borde: #E7E5E4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--crema);
+    color: var(--texto);
+    min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--rojo-oscuro);
+    color: var(--crema);
+    padding: 2rem 2rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(127,29,29,0.3);
+  }
+
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .header-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .header-sub {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    font-style: italic;
+    margin-top: 0.2rem;
+  }
+
+  .header-grupo {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    background: rgba(255,255,255,0.15);
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .guardado-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--crema-oscuro);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .guardado-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ADE80;
+    display: inline-block;
+    animation: pulso 2s infinite;
+  }
+
+  @keyframes pulso {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* NAVEGACIÓN / ÍNDICE */
+  .nav-indice {
+    background: var(--rojo);
+    padding: 0.6rem 2rem;
+    position: sticky;
+    top: 80px;
+    z-index: 99;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .nav-indice-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .nav-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.75);
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 0.3rem 0.7rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .nav-btn:hover, .nav-btn.activo {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border-color: rgba(255,255,255,0.5);
+  }
+
+  .nav-sep {
+    color: rgba(255,255,255,0.3);
+    font-size: 0.8rem;
+  }
+
+  /* MAIN */
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* PANTALLA DE LOGIN */
+  #pantalla-login {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .login-box {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 3rem 2.5rem;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: 0 8px 40px rgba(185,28,28,0.08);
+  }
+
+  .login-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--rojo-oscuro);
+    margin-bottom: 0.4rem;
+    line-height: 1.2;
+  }
+
+  .login-sub {
+    font-size: 0.9rem;
+    color: var(--texto-suave);
+    margin-bottom: 2rem;
+    font-style: italic;
+  }
+
+  .campo-grupo {
+    margin-bottom: 1.4rem;
+  }
+
+  .campo-label {
+    display: block;
+    font-size: 0.82rem;
+    font-family: 'DM Mono', monospace;
+    color: var(--rojo-oscuro);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .campo-input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1.5px solid var(--borde);
+    border-radius: 5px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.95rem;
+    color: var(--texto);
+    background: var(--crema);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .campo-input:focus {
+    border-color: var(--rojo);
+    background: var(--blanco);
+  }
+
+  .campo-hint {
+    font-size: 0.78rem;
+    color: var(--texto-suave);
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+
+  .integrantes-grid {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .btn-primario {
+    width: 100%;
+    padding: 0.9rem;
+    background: var(--rojo);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-primario:hover {
+    background: var(--rojo-oscuro);
+  }
+
+  .error-msg {
+    background: var(--rojo-suave);
+    color: var(--rojo-oscuro);
+    padding: 0.7rem 1rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin-top: 0.8rem;
+    display: none;
+  }
+
+  /* PANTALLA PRINCIPAL */
+  #pantalla-principal { display: none; }
+
+  /* INDICACIONES */
+  .bloque-indicaciones {
+    background: var(--rojo-oscuro);
+    color: var(--crema);
+    border-radius: 8px;
+    padding: 2rem 2.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .indicaciones-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    font-style: italic;
+  }
+
+  .indicacion-item {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .indicacion-etiqueta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    background: rgba(255,255,255,0.15);
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    white-space: nowrap;
+    height: fit-content;
+    margin-top: 0.15rem;
+  }
+
+  /* SECCIONES */
+  .seccion {
+    display: none;
+  }
+
+  .seccion.activa {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .seccion-header {
+    border-left: 5px solid var(--rojo);
+    padding-left: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .seccion-parte {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--rojo);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.3rem;
+  }
+
+  .seccion-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--rojo-oscuro);
+    line-height: 1.2;
+  }
+
+  .seccion-descripcion {
+    font-size: 0.92rem;
+    color: var(--texto-suave);
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+
+  /* PREGUNTAS OPCIÓN MÚLTIPLE */
+  .pregunta-mc {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.2s;
+  }
+
+  .pregunta-mc:hover {
+    box-shadow: 0 4px 16px rgba(185,28,28,0.06);
+  }
+
+  .pregunta-numero {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--rojo);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.6rem;
+  }
+
+  .pregunta-enunciado {
+    font-size: 0.97rem;
+    line-height: 1.7;
+    color: var(--texto);
+    margin-bottom: 1.2rem;
+    font-weight: 400;
+  }
+
+  .opciones-lista {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .opcion-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.7rem 1rem;
+    border: 1.5px solid var(--borde);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--crema);
+  }
+
+  .opcion-item:hover {
+    border-color: var(--rojo-claro);
+    background: var(--rojo-suave);
+  }
+
+  .opcion-item.seleccionada {
+    border-color: var(--rojo);
+    background: var(--rojo-suave);
+  }
+
+  .opcion-radio {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--borde);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: all 0.15s;
+    position: relative;
+    background: white;
+  }
+
+  .opcion-item.seleccionada .opcion-radio {
+    border-color: var(--rojo);
+    background: var(--rojo);
+  }
+
+  .opcion-item.seleccionada .opcion-radio::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .opcion-letra {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--rojo-oscuro);
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .opcion-texto {
+    font-size: 0.91rem;
+    line-height: 1.5;
+    color: var(--texto);
+  }
+
+  /* PREGUNTAS ABIERTAS */
+  .pregunta-abierta {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .textarea-respuesta {
+    width: 100%;
+    min-height: 200px;
+    padding: 1rem;
+    border: 1.5px solid var(--borde);
+    border-radius: 5px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.93rem;
+    line-height: 1.7;
+    color: var(--texto);
+    background: var(--crema);
+    resize: vertical;
+    transition: border-color 0.2s;
+    outline: none;
+    margin-top: 1rem;
+  }
+
+  .textarea-respuesta:focus {
+    border-color: var(--rojo);
+    background: var(--blanco);
+  }
+
+  /* ESTUDIO DE CASO */
+  .caso-intro {
+    background: var(--rojo-oscuro);
+    color: var(--crema);
+    border-radius: 8px;
+    padding: 2rem 2.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .caso-intro-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    font-style: italic;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .caso-pasos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin: 1.2rem 0;
+  }
+
+  .caso-paso {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .caso-paso-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    background: rgba(255,255,255,0.2);
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+  }
+
+  .caso-paso-texto {
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .caso-pregunta-central {
+    background: rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 1rem 1.5rem;
+    margin-top: 1.2rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    text-align: center;
+  }
+
+  .pistas-bloque {
+    background: var(--crema-oscuro);
+    border: 1px solid var(--crema-borde);
+    border-radius: 8px;
+    padding: 1.8rem 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .pistas-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--rojo-oscuro);
+    margin-bottom: 1rem;
+  }
+
+  .pistas-lista {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .pistas-lista li {
+    font-size: 0.88rem;
+    color: var(--texto);
+    padding-left: 1.2rem;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .pistas-lista li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--rojo);
+    font-weight: 700;
+  }
+
+  .campo-organizacion {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .campo-organizacion-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--rojo);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .contador-palabras {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--texto-suave);
+    text-align: right;
+    margin-top: 0.4rem;
+  }
+
+  .contador-palabras.limite {
+    color: var(--rojo);
+    font-weight: 500;
+  }
+
+  /* ESPERADO */
+  .esperado-bloque {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-left: 4px solid var(--rojo);
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: var(--texto-suave);
+    line-height: 1.7;
+  }
+
+  /* NAVEGACIÓN ENTRE SECCIONES */
+  .nav-secciones {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--borde);
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-nav {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    padding: 0.7rem 1.4rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1.5px solid var(--rojo);
+  }
+
+  .btn-nav-anterior {
+    background: var(--blanco);
+    color: var(--rojo);
+  }
+
+  .btn-nav-anterior:hover {
+    background: var(--rojo-suave);
+  }
+
+  .btn-nav-siguiente {
+    background: var(--rojo);
+    color: white;
+  }
+
+  .btn-nav-siguiente:hover {
+    background: var(--rojo-oscuro);
+  }
+
+  .progreso-texto {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--texto-suave);
+    text-align: center;
+  }
+
+  /* BARRA DE PROGRESO */
+  .barra-progreso-wrap {
+    background: rgba(255,255,255,0.15);
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 0.8rem;
+    overflow: hidden;
+  }
+
+  .barra-progreso-fill {
+    height: 100%;
+    background: var(--crema-borde);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* PANTALLA DE ENVÍO */
+  #pantalla-envio { display: none; }
+
+  .envio-box {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    max-width: 600px;
+    margin: 3rem auto;
+  }
+
+  .envio-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--rojo-oscuro);
+    margin-bottom: 0.8rem;
+  }
+
+  .envio-desc {
+    font-size: 0.92rem;
+    color: var(--texto-suave);
+    margin-bottom: 2rem;
+    line-height: 1.7;
+  }
+
+  .resumen-envio {
+    background: var(--crema);
+    border: 1px solid var(--crema-borde);
+    border-radius: 6px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+
+  .resumen-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid var(--crema-borde);
+  }
+
+  .resumen-item:last-child { border-bottom: none; }
+
+  .resumen-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--texto-suave);
+    text-transform: uppercase;
+  }
+
+  .resumen-valor {
+    color: var(--texto);
+    font-weight: 500;
+    text-align: right;
+    max-width: 60%;
+  }
+
+  .resumen-valor.ok { color: #15803D; }
+  .resumen-valor.pendiente { color: var(--rojo); }
+
+  .btn-enviar-final {
+    width: 100%;
+    padding: 1rem;
+    background: var(--rojo);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 0.8rem;
+  }
+
+  .btn-enviar-final:hover { background: var(--rojo-oscuro); }
+  .btn-enviar-final:disabled {
+    background: #9CA3AF;
+    cursor: not-allowed;
+  }
+
+  .btn-volver-revisar {
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--blanco);
+    color: var(--rojo);
+    border: 1.5px solid var(--rojo);
+    border-radius: 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-volver-revisar:hover { background: var(--rojo-suave); }
+
+  /* PANTALLA DE CONFIRMACIÓN */
+  #pantalla-confirmacion { display: none; }
+
+  .confirmacion-box {
+    text-align: center;
+    max-width: 580px;
+    margin: 4rem auto;
+    padding: 3rem;
+  }
+
+  .confirmacion-icono {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .confirmacion-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--rojo-oscuro);
+    margin-bottom: 1rem;
+  }
+
+  .confirmacion-desc {
+    font-size: 0.95rem;
+    color: var(--texto-suave);
+    line-height: 1.7;
+  }
+
+  .confirmacion-codigo {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    background: var(--crema-oscuro);
+    border: 1px solid var(--crema-borde);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 1rem 0;
+  }
+
+  /* PANEL DOCENTE */
+  #pantalla-docente { display: none; }
+
+  .docente-header {
+    background: var(--rojo-oscuro);
+    color: var(--crema);
+    padding: 1.5rem 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .docente-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  .tabla-entregas {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--blanco);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 2rem;
+  }
+
+  .tabla-entregas th {
+    background: var(--rojo-oscuro);
+    color: var(--crema);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.8rem 1rem;
+    text-align: left;
+  }
+
+  .tabla-entregas td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--borde);
+    font-size: 0.85rem;
+    vertical-align: top;
+  }
+
+  .tabla-entregas tr:last-child td { border-bottom: none; }
+  .tabla-entregas tr:hover td { background: var(--crema); }
+
+  .btn-evaluar {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.4rem 0.8rem;
+    background: var(--rojo);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-evaluar:hover { background: var(--rojo-oscuro); }
+  .btn-evaluar:disabled { background: #9CA3AF; cursor: not-allowed; }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem;
+    overflow-y: auto;
+  }
+
+  .modal-overlay.abierto { display: flex; }
+
+  .modal-box {
+    background: var(--blanco);
+    border-radius: 10px;
+    padding: 2.5rem;
+    max-width: 800px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    margin: auto;
+  }
+
+  .modal-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--rojo-oscuro);
+    margin-bottom: 1.5rem;
+  }
+
+  .respuesta-bloque {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--borde);
+  }
+
+  .respuesta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--rojo);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+  }
+
+  .respuesta-texto {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--texto);
+    background: var(--crema);
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+  }
+
+  .evaluacion-ia-bloque {
+    background: var(--crema-oscuro);
+    border: 1px solid var(--crema-borde);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .evaluacion-ia-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--rojo-oscuro);
+    margin-bottom: 1rem;
+  }
+
+  .nota-display {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--rojo-oscuro);
+    text-align: center;
+    margin: 1rem 0;
+  }
+
+  .nota-editable {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 0.5rem;
+    border: 2px solid var(--rojo);
+    border-radius: 5px;
+    width: 100px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .btn-modal-cerrar {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--blanco);
+    color: var(--texto-suave);
+    border: 1.5px solid var(--borde);
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 0.5rem;
+  }
+
+  .btn-modal-guardar {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--rojo);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .btn-descargar-excel {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    padding: 0.7rem 1.4rem;
+    background: #15803D;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-descargar-excel:hover { background: #166534; }
+
+  .loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* LOGIN DOCENTE */
+  .login-docente-btn {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.5rem 0.9rem;
+    background: rgba(127,29,29,0.1);
+    color: var(--rojo-oscuro);
+    border: 1px solid rgba(127,29,29,0.2);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .login-docente-btn:hover {
+    background: rgba(127,29,29,0.15);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .header { padding: 1rem; top: 0; }
+    .nav-indice { top: 70px; padding: 0.5rem 1rem; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .login-box { padding: 2rem 1.5rem; }
+    .bloque-indicaciones { padding: 1.5rem; }
+    .pregunta-mc { padding: 1.3rem; }
+    .pregunta-abierta { padding: 1.3rem; }
+    .caso-intro { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header" id="header-principal" style="display:none;">
+  <div class="header-inner">
+    <div>
+      <div class="header-titulo">Partidos Políticos y Sistemas Electorales</div>
+      <div class="header-sub">Universidad Nacional de Colombia, sede Medellín</div>
+    </div>
+    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.4rem;">
+      <div class="header-grupo" id="header-grupo-nombre">—</div>
+      <div class="guardado-badge"><span class="guardado-dot"></span> <span id="guardado-texto">Guardando...</span></div>
+    </div>
+  </div>
+  <div class="barra-progreso-wrap">
+    <div class="barra-progreso-fill" id="barra-progreso" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- NAVEGACIÓN ÍNDICE -->
+<div class="nav-indice" id="nav-indice" style="display:none;">
+  <div class="nav-indice-inner">
+    <button class="nav-btn" onclick="irSeccion('indicaciones')">Indicaciones</button>
+    <span class="nav-sep">›</span>
+    <button class="nav-btn" onclick="irSeccion('opcion-multiple')">Parte I-A: Opción Múltiple</button>
+    <span class="nav-sep">›</span>
+    <button class="nav-btn" onclick="irSeccion('preguntas-abiertas')">Parte I-B: Preguntas Abiertas</button>
+    <span class="nav-sep">›</span>
+    <button class="nav-btn" onclick="irSeccion('estudio-caso')">Parte II: Estudio de Caso</button>
+    <span class="nav-sep">›</span>
+    <button class="nav-btn" onclick="irSeccion('envio')" style="color:#FDE68A; border-color:#FDE68A;">Enviar</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- PANTALLA LOGIN -->
+  <div id="pantalla-login">
+    <div class="login-box">
+      <div class="login-titulo">Parcial</div>
+      <div class="login-sub">Partidos Políticos y Sistemas Electorales — UNAL Medellín</div>
+
+      <div class="campo-grupo">
+        <label class="campo-label" for="input-codigo">Código de grupo</label>
+        <input class="campo-input" type="text" id="input-codigo" placeholder="GrupoApellido_Apellido_Apellido" autocomplete="off">
+        <div class="campo-hint">Sin tildes ni mayúsculas. Ejemplo: GrupoGarcia_Martinez_Lopez</div>
+      </div>
+
+      <div class="campo-grupo">
+        <label class="campo-label">Integrantes del grupo</label>
+        <div class="integrantes-grid">
+          <input class="campo-input" type="text" id="input-int1" placeholder="Nombre completo integrante 1">
+          <input class="campo-input" type="text" id="input-int2" placeholder="Nombre completo integrante 2 (si aplica)">
+          <input class="campo-input" type="text" id="input-int3" placeholder="Nombre completo integrante 3 (si aplica)">
+        </div>
+      </div>
+
+      <button class="btn-primario" onclick="iniciarSesion()">Ingresar al parcial</button>
+      <div class="error-msg" id="error-login">Por favor ingresa el código de grupo y al menos un nombre.</div>
+    </div>
+  </div>
+
+  <!-- PANTALLA PRINCIPAL -->
+  <div id="pantalla-principal">
+
+    <!-- SECCIÓN: INDICACIONES -->
+    <div class="seccion" id="sec-indicaciones">
+      <div class="bloque-indicaciones">
+        <div class="indicaciones-titulo">Antes de comenzar</div>
+
+        <div class="indicacion-item">
+          <span class="indicacion-etiqueta">Tiempo</span>
+          <span>Tienen desde el momento de publicación hasta las 11:59 p.m. del viernes 15 de mayo para enviar su ejercicio. No hay prórroga.</span>
+        </div>
+        <div class="indicacion-item">
+          <span class="indicacion-etiqueta">Internet</span>
+          <span>Pueden trabajar sin conexión a internet durante todo el ejercicio. Solo necesitarán conexión estable en el momento de enviar. Asegúrense de tenerla antes de dar clic en enviar.</span>
+        </div>
+        <div class="indicacion-item">
+          <span class="indicacion-etiqueta">Guardado</span>
+          <span>La plataforma guarda su avance automáticamente en el dispositivo donde estén trabajando. Si cierran el navegador o recargan la página, su progreso estará disponible cuando vuelvan a ingresar con el mismo código de grupo en el mismo dispositivo.</span>
+        </div>
+        <div class="indicacion-item">
+          <span class="indicacion-etiqueta">Dispositivo</span>
+          <span>Se recomienda enfáticamente que el ejercicio se aloje y construya en un solo dispositivo. Trabajar desde varios dispositivos simultáneamente puede generar conflictos en el guardado y pérdida de avances.</span>
+        </div>
+        <div class="indicacion-item">
+          <span class="indicacion-etiqueta">Herramientas</span>
+          <span>Pueden redactar sus respuestas en otra herramienta como Word o Google Docs y luego pegarlas aquí. También pueden usar sus apuntes y materiales del curso. Como se darán cuenta, el ejercicio es más analítico que memorístico.</span>
+        </div>
+        <div class="indicacion-item">
+          <span class="indicacion-etiqueta">Grupos</span>
+          <span>El trabajo es grupal con un máximo de tres personas por grupo. Cada grupo tiene un código único que construyeron al ingresar.</span>
+        </div>
+      </div>
+
+      <div class="nav-secciones">
+        <div></div>
+        <div class="progreso-texto">Sección 1 de 4</div>
+        <button class="btn-nav btn-nav-siguiente" onclick="irSeccion('opcion-multiple')">Parte I-A: Opción Múltiple →</button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: OPCIÓN MÚLTIPLE -->
+    <div class="seccion" id="sec-opcion-multiple">
+      <div class="seccion-header">
+        <div class="seccion-parte">Parte I — Sección A</div>
+        <div class="seccion-titulo">Opción múltiple</div>
+        <div class="seccion-descripcion">Seleccionen la única respuesta correcta para cada pregunta. (40% del total — 10 preguntas)</div>
+      </div>
+
+      <div id="contenedor-mc"></div>
+
+      <div class="nav-secciones">
+        <button class="btn-nav btn-nav-anterior" onclick="irSeccion('indicaciones')">← Indicaciones</button>
+        <div class="progreso-texto">Sección 2 de 4</div>
+        <button class="btn-nav btn-nav-siguiente" onclick="irSeccion('preguntas-abiertas')">Parte I-B: Abiertas →</button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: PREGUNTAS ABIERTAS -->
+    <div class="seccion" id="sec-preguntas-abiertas">
+      <div class="seccion-header">
+        <div class="seccion-parte">Parte I — Sección B</div>
+        <div class="seccion-titulo">Preguntas abiertas</div>
+        <div class="seccion-descripcion">Respondan de forma clara y argumentada. No hay respuesta única correcta, hay respuestas mejor o peor sustentadas.</div>
+      </div>
+
+      <!-- PA1 -->
+      <div class="pregunta-abierta">
+        <div class="pregunta-numero">Pregunta Abierta 1</div>
+        <div class="pregunta-enunciado">
+          La definición de trabajo vista en clase describe al partido político moderno como una <em>"organización institucionalizada, funcional y duradera que actúa como organismo representativo e instrumento expresivo, cuyo principal objetivo es la conquista, ejercicio y conservación del poder dentro del sistema político."</em>
+          <br><br>
+          Expliquen por qué cada uno de los elementos de esta definición es necesario y no decorativo.
+        </div>
+        <textarea class="textarea-respuesta" id="pa1" placeholder="Escriban su respuesta aquí..." oninput="guardarLocal(); actualizarContador('pa1','cont-pa1')"></textarea>
+        <div class="contador-palabras" id="cont-pa1">0 palabras</div>
+      </div>
+
+      <!-- PA2 -->
+      <div class="pregunta-abierta">
+        <div class="pregunta-numero">Pregunta Abierta 2</div>
+        <div class="pregunta-enunciado">
+          El Nuevo Liberalismo y la Unión Patriótica fueron partidos políticos colombianos que dejaron de existir como tales en la década de los noventa. El asesinato sistemático de sus miembros y líderes fue la causa directa de su desaparición. Desde la lógica formal y teórica vista en clase, ¿cuáles son las razones que impidieron su existencia como partidos políticos?
+        </div>
+        <textarea class="textarea-respuesta" id="pa2" placeholder="Escriban su respuesta aquí..." oninput="guardarLocal(); actualizarContador('pa2','cont-pa2')"></textarea>
+        <div class="contador-palabras" id="cont-pa2">0 palabras</div>
+      </div>
+
+      <div class="nav-secciones">
+        <button class="btn-nav btn-nav-anterior" onclick="irSeccion('opcion-multiple')">← Opción Múltiple</button>
+        <div class="progreso-texto">Sección 3 de 4</div>
+        <button class="btn-nav btn-nav-siguiente" onclick="irSeccion('estudio-caso')">Parte II: Estudio de Caso →</button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: ESTUDIO DE CASO -->
+    <div class="seccion" id="sec-estudio-caso">
+      <div class="seccion-header">
+        <div class="seccion-parte">Parte II</div>
+        <div class="seccion-titulo">Estudio de caso</div>
+        <div class="seccion-descripcion">60% del total</div>
+      </div>
+
+      <div class="caso-intro">
+        <div class="caso-intro-titulo">¿Esto es un partido político?</div>
+        <p style="font-size:0.92rem; line-height:1.7; margin-bottom:1rem;">A lo largo de este curso hemos construido herramientas conceptuales para analizar, clasificar y cuestionar las organizaciones políticas. Este es el momento de aplicarlas.</p>
+        <div class="caso-pasos">
+          <div class="caso-paso">
+            <span class="caso-paso-num">Paso 1</span>
+            <span class="caso-paso-texto">Seleccionen una organización política de su interés, puede ser colombiana, latinoamericana o de cualquier otra región del mundo.</span>
+          </div>
+          <div class="caso-paso">
+            <span class="caso-paso-num">Paso 2</span>
+            <span class="caso-paso-texto">Realicen un rastreo básico de fuentes de información sobre ella: sitio web oficial, redes sociales, notas de prensa, columnas de opinión, declaraciones de sus líderes, registros electorales, o cualquier otra fuente que consideren relevante.</span>
+          </div>
+          <div class="caso-paso">
+            <span class="caso-paso-num">Paso 3</span>
+            <span class="caso-paso-texto">Con base en esa información y en los contenidos del curso, respondan de forma argumentada la siguiente pregunta:</span>
+          </div>
+        </div>
+        <div class="caso-pregunta-central">¿Es esta organización un partido político? ¿Por qué?</div>
+      </div>
+
+      <div class="campo-organizacion">
+        <label class="campo-organizacion-label">Organización seleccionada</label>
+        <input class="campo-input" type="text" id="caso-organizacion" placeholder="Nombre de la organización que van a analizar" oninput="guardarLocal()">
+      </div>
+
+      <div class="pistas-bloque">
+        <div class="pistas-titulo">Pistas para orientar su análisis</div>
+        <p style="font-size:0.88rem; color:var(--texto-suave); margin-bottom:0.8rem;">No se trata de responder sí o no. Se trata de sostener una posición con argumentos teóricos y evidencia empírica. Las siguientes preguntas pueden ayudarles a organizar su análisis, no son una lista de chequeo obligatoria, sino puntos de entrada posibles:</p>
+        <ul class="pistas-lista">
+          <li>¿Cómo define ella misma lo que es? ¿Coincide esa autodefinición con los criterios teóricos vistos en clase?</li>
+          <li>¿Es una organización institucionalizada, funcional y duradera, o depende principalmente de un liderazgo personal o un momento coyuntural?</li>
+          <li>¿Busca conquistar, ejercer y conservar el poder dentro del sistema político, o su orientación es otra?</li>
+          <li>¿Tiene reconocimiento institucional formal, personería jurídica o equivalente?</li>
+          <li>¿Cómo se relaciona con la sociedad civil, con el Estado y con otras organizaciones políticas?</li>
+          <li>¿Sus acciones y recursos se parecen más a los de un partido, un movimiento social o un grupo de interés?</li>
+          <li>¿Qué tipo de partido sería según las tipologías vistas en clase? ¿O no encaja en ninguna?</li>
+          <li>¿Quiénes son sus líderes y qué papel juegan dentro de la organización?</li>
+          <li>¿Es un partido o una facción? ¿Por qué?</li>
+        </ul>
+      </div>
+
+      <div class="campo-organizacion">
+        <label class="campo-organizacion-label">Su respuesta — máximo 900 palabras</label>
+        <p style="font-size:0.85rem; color:var(--texto-suave); margin-bottom:0.5rem; font-style:italic;">Piénsenlo como una columna de opinión extendida, pero con argumentos teóricos y evidencia empírica que los sostengan. Usen los conceptos del curso no como adorno sino como herramienta real de análisis. La evidencia que recolectaron debe dialogar con la teoría.</p>
+        <textarea class="textarea-respuesta" id="caso-respuesta" style="min-height:350px;" placeholder="Escriban aquí su análisis..." oninput="guardarLocal(); contarPalabrasCaso()"></textarea>
+        <div class="contador-palabras" id="cont-caso">0 / 900 palabras</div>
+      </div>
+
+      <div class="esperado-bloque">
+        <strong>Lo que se espera de su respuesta:</strong> Una posición clara y sostenida. Si hay tensiones o contradicciones entre lo que la organización dice ser y lo que la teoría diría que es, señálenlas y discútanlas, ahí está precisamente la riqueza del ejercicio.
+      </div>
+
+      <div class="nav-secciones">
+        <button class="btn-nav btn-nav-anterior" onclick="irSeccion('preguntas-abiertas')">← Preguntas Abiertas</button>
+        <div class="progreso-texto">Sección 4 de 4</div>
+        <button class="btn-nav btn-nav-siguiente" onclick="irSeccion('envio')" style="background:#7F1D1D;">Revisar y Enviar →</button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: ENVÍO -->
+    <div class="seccion" id="sec-envio">
+      <div class="envio-box">
+        <div class="envio-titulo">Revisar y enviar</div>
+        <div class="envio-desc">Antes de enviar, verifiquen que han completado todas las secciones. Una vez enviado no podrán modificar sus respuestas.</div>
+
+        <div class="resumen-envio" id="resumen-envio"></div>
+
+        <button class="btn-enviar-final" id="btn-enviar-final" onclick="enviarParcial()">Enviar parcial</button>
+        <button class="btn-volver-revisar" onclick="irSeccion('indicaciones')">← Volver a revisar</button>
+        <div class="error-msg" id="error-envio" style="display:none; margin-top:1rem;"></div>
+      </div>
+    </div>
+
+  </div><!-- fin pantalla-principal -->
+
+  <!-- PANTALLA CONFIRMACIÓN -->
+  <div id="pantalla-confirmacion">
+    <div class="confirmacion-box">
+      <div class="confirmacion-icono">✓</div>
+      <div class="confirmacion-titulo">¡Entrega recibida!</div>
+      <div class="confirmacion-codigo" id="conf-codigo"></div>
+      <div class="confirmacion-desc">Su parcial ha sido enviado exitosamente. El docente revisará las respuestas y les comunicará los resultados. No es necesario hacer nada más.</div>
+    </div>
+  </div>
+
+  <!-- PANTALLA DOCENTE -->
+  <div id="pantalla-docente">
+    <div class="docente-header">
+      <div class="docente-titulo">Panel Docente — PPySE</div>
+      <div style="display:flex; gap:0.8rem; flex-wrap:wrap;">
+        <button class="btn-descargar-excel" onclick="descargarExcel()">↓ Descargar Excel</button>
+        <button onclick="cargarEntregas()" style="font-family:'DM Mono',monospace; font-size:0.8rem; padding:0.6rem 1rem; background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.3); border-radius:4px; cursor:pointer;">↺ Actualizar</button>
+        <button onclick="cerrarPanelDocente()" style="font-family:'DM Mono',monospace; font-size:0.8rem; padding:0.6rem 1rem; background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); border-radius:4px; cursor:pointer;">Salir</button>
+      </div>
+    </div>
+    <div id="tabla-entregas-wrap"></div>
+  </div>
+
+</div><!-- fin main -->
+
+<!-- MODAL DETALLE ENTREGA -->
+<div class="modal-overlay" id="modal-detalle">
+  <div class="modal-box">
+    <div class="modal-titulo" id="modal-grupo-titulo">—</div>
+    <div id="modal-contenido"></div>
+    <div style="margin-top:1.5rem; display:flex; justify-content:flex-end; gap:0.5rem;">
+      <button class="btn-modal-cerrar" onclick="cerrarModal()">Cerrar</button>
+      <button class="btn-modal-guardar" onclick="guardarNotaDocente()" id="btn-guardar-nota" style="display:none;">Guardar nota</button>
+    </div>
+  </div>
+</div>
+
+<!-- BTN ACCESO DOCENTE -->
+<button class="login-docente-btn" id="btn-docente-acceso" onclick="mostrarLoginDocente()">Panel docente</button>
+
+<script>
+// =====================================================
+// CONFIGURACIÓN
+// =====================================================
+const SUPABASE_URL = 'https://yydbobwdmzcnulvakyxq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5ZGJvYndkbXpjbnVsdmFreXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxMTQzNzgsImV4cCI6MjA5MzY5MDM3OH0.dBwBOEUaTbW7ZK-1EaSEDmGgSvjtpk9xDKqh8sYgyvU';
+const ANTHROPIC_KEY = 'placeholder'; // Se usará desde el panel docente vía proxy
+const CLAVE_DOCENTE = 'PPySE2025doc';
+const TABLA = 'parcial_ppyse';
+
+// =====================================================
+// PREGUNTAS
+// =====================================================
+const PREGUNTAS_MC = [
+  {
+    id: 'p1',
+    enunciado: 'Sartori distingue entre facción y partido político. Un grupo organizado que tiene estatutos, personería jurídica y participa en elecciones, pero cuya dinámica interna responde principalmente a asegurar cuotas de poder para sus líderes y no a la persecución de un programa colectivo, debería clasificarse como:',
+    opciones: [
+      { letra: 'a', texto: 'Un movimiento social institucionalizado, porque prioriza liderazgos sobre estructuras.' },
+      { letra: 'b', texto: 'Un partido político pleno, porque cumple los requisitos formales e institucionales mínimos.' },
+      { letra: 'c', texto: 'Un partido cartel, porque su objetivo es proteger recursos estatales de nuevos competidores.' },
+      { letra: 'd', texto: 'Una facción disfrazada de partido, porque la forma institucional no basta si la acción persigue intereses individuales por encima del interés colectivo.' }
+    ],
+    correcta: 'd'
+  },
+  {
+    id: 'p2',
+    enunciado: 'Alcántara y Freidenberg describen los partidos como organizaciones con cinco dimensiones o caras. ¿Cuál de las siguientes distribuciones entre ámbito externo e interno es correcta?',
+    opciones: [
+      { letra: 'a', texto: 'La organización electoral y la organización burocrática pertenecen al ámbito externo, porque ambas implican relación con el Estado.' },
+      { letra: 'b', texto: 'La organización voluntaria de miembros pertenece al ámbito externo, porque es la cara más visible del partido ante la ciudadanía.' },
+      { letra: 'c', texto: 'La organización electoral, gubernamental y legislativa pertenecen al ámbito externo, mientras la organización burocrática y la voluntaria de miembros pertenecen al ámbito interno.' },
+      { letra: 'd', texto: 'La organización legislativa pertenece al ámbito interno porque ocurre dentro de las instituciones del partido y no ante el electorado.' }
+    ],
+    correcta: 'c'
+  },
+  {
+    id: 'p3',
+    enunciado: 'Según la tipología de Vallès, un sindicato que decide lanzar candidatos propios a elecciones legislativas y construir una estructura permanente de competencia electoral está:',
+    opciones: [
+      { letra: 'a', texto: 'Formando un partido de masas según Duverger, porque su base social es trabajadora y tiene militancia amplia.' },
+      { letra: 'b', texto: 'Actuando como movimiento social, porque su origen está fuera de las instituciones parlamentarias.' },
+      { letra: 'c', texto: 'Transitando hacia la categoría de partido político, porque cambia su orientación hacia el ejercicio del poder institucional mediante competencia electoral.' },
+      { letra: 'd', texto: 'Convirtiéndose en un grupo de interés más sofisticado, porque sigue representando un sector específico.' }
+    ],
+    correcta: 'c'
+  },
+  {
+    id: 'p4',
+    enunciado: 'Un partido que surgió como vehículo electoral de un candidato popular, tiene ideario vago con discurso antisistema, existe principalmente durante las campañas, personaliza su liderazgo y busca el aval de una candidatura más que el control programático del Estado, corresponde al tipo:',
+    opciones: [
+      { letra: 'a', texto: 'Partido cartel, porque depende del financiamiento estatal y se aleja de la sociedad civil.' },
+      { letra: 'b', texto: 'Partido empresa o "electorero", porque su razón de ser es la candidatura, opera con lógica outsider y personaliza el liderazgo por encima de la estructura.' },
+      { letra: 'c', texto: 'Nuevo partido digital, porque usa redes sociales y tiene seguidores volátiles en lugar de militantes estables.' },
+      { letra: 'd', texto: 'Partido catch-all, porque busca capturar el mayor número de votantes posibles sin ideología fuerte.' }
+    ],
+    correcta: 'b'
+  },
+  {
+    id: 'p5',
+    enunciado: 'Alcántara y Freidenberg afirman que los partidos latinoamericanos presentan "baja institucionalización". En términos organizativos, esto significa principalmente que:',
+    opciones: [
+      { letra: 'a', texto: 'La democracia interna es más desarrollada en América Latina que en Europa porque hay menos burocracia.' },
+      { letra: 'b', texto: 'Los partidos no tienen reconocimiento legal formal en muchos países de la región.' },
+      { letra: 'c', texto: 'La estabilidad del partido depende más del liderazgo personal que de reglas y estructuras que sobrevivan a ese liderazgo.' },
+      { letra: 'd', texto: 'Los partidos latinoamericanos tienen menos militantes que sus equivalentes europeos.' }
+    ],
+    correcta: 'c'
+  },
+  {
+    id: 'p6',
+    enunciado: 'Freidenberg, Guadarrama y Gilas sostienen que las reglas formales de inclusión de género, como las cuotas, son necesarias pero no suficientes para feminizar los partidos. El argumento central es que:',
+    opciones: [
+      { letra: 'a', texto: 'Las cuotas generan resistencia masculina que termina expulsando a las mujeres de las listas electorales.' },
+      { letra: 'b', texto: 'La feminización real solo ocurre cuando las mujeres controlan los órganos de financiamiento del partido.' },
+      { letra: 'c', texto: 'Los sistemas electorales proporcionales anulan el efecto de las cuotas porque distribuyen el poder de forma diferente.' },
+      { letra: 'd', texto: 'Las instituciones informales, cultura organizacional, redes de poder y prácticas no escritas, pueden reproducir exclusión incluso cuando las reglas formales son inclusivas.' }
+    ],
+    correcta: 'd'
+  },
+  {
+    id: 'p7',
+    enunciado: 'Según la tipología vista en clase, la diferencia más relevante entre un partido catch-all y un partido cartel no es ideológica sino organizativa. ¿Cuál es esa diferencia?',
+    opciones: [
+      { letra: 'a', texto: 'El cartel tiene más militantes que el catch-all porque necesita cuadros burocráticos para controlar el Estado.' },
+      { letra: 'b', texto: 'El catch-all tiene financiación privada diversificada y actúa como intermediario entre sociedad y Estado, mientras el cartel depende del financiamiento estatal y se fusiona con él.' },
+      { letra: 'c', texto: 'El cartel mantiene programas ideológicos más claros que el catch-all porque necesita legitimarse ante el Estado.' },
+      { letra: 'd', texto: 'El catch-all es propio del siglo XIX y el cartel del siglo XX, por lo que la diferencia es principalmente histórica.' }
+    ],
+    correcta: 'b'
+  },
+  {
+    id: 'p8',
+    enunciado: 'Un partido político que en sus inicios tenía fuerte militancia y conexión ideológica con el movimiento obrero, pero que con el tiempo redujo su discurso de clase, buscó capturar electorados más amplios y comenzó a depender del financiamiento estatal, ha transitado según Katz por la secuencia:',
+    opciones: [
+      { letra: 'a', texto: 'Partido de masas → partido catch-all → partido cartel.' },
+      { letra: 'b', texto: 'Partido de cuadros → partido de masas → partido catch-all → partido cartel.' },
+      { letra: 'c', texto: 'Partido de masas → partido cartel → partido catch-all, porque la dependencia estatal antecede la desideologización.' },
+      { letra: 'd', texto: 'Partido catch-all → partido de masas → partido cartel, porque recuperó militancia antes de profesionalizarse.' }
+    ],
+    correcta: 'a'
+  },
+  {
+    id: 'p9',
+    enunciado: 'Benjamin Constant sostenía que eliminar las facciones era imposible sin suprimir la libertad política. Sartori retoma este debate pero establece una distinción clave entre facción y partido. ¿Cuál de las siguientes opciones expresa mejor esa distinción?',
+    opciones: [
+      { letra: 'a', texto: 'Para Sartori las facciones deben tolerarse dentro de los partidos pero eliminarse entre partidos distintos para garantizar estabilidad.' },
+      { letra: 'b', texto: 'Sartori y Constant coinciden: ambos aceptan que facción y partido son expresiones equivalentes del pluralismo político moderno.' },
+      { letra: 'c', texto: 'Sartori acepta el pluralismo pero distingue: la facción persigue intereses individuales sin organización legítima, mientras el partido canaliza el disenso hacia intereses públicos con estructura institucional reconocida.' },
+      { letra: 'd', texto: 'Para Sartori las facciones son inevitables en democracia, por lo que propone limitarlas mediante restricciones al pluralismo.' }
+    ],
+    correcta: 'c'
+  },
+  {
+    id: 'p10',
+    enunciado: 'Podemos, La France Insoumise y el Movimiento 5 Stelle son ejemplos de lo que en clase se clasificó como nuevos partidos o partidos digitales. Lo que los distingue organizativamente de un partido de masas tradicional es que:',
+    opciones: [
+      { letra: 'a', texto: 'Tienen mayor disciplina interna y estructuras burocráticas más sólidas que los partidos de masas.' },
+      { letra: 'b', texto: 'Surgieron como expresión de movimientos obreros que buscaban institucionalizar sus demandas en el sistema electoral.' },
+      { letra: 'c', texto: 'Se basan en causas específicas, tienen seguidores volátiles en lugar de militantes estables, usan redes digitales como canal principal y sus liderazgos son de tipo influenciador carismático.' },
+      { letra: 'd', texto: 'Su financiación es exclusivamente estatal y sus líderes provienen de élites parlamentarias establecidas.' }
+    ],
+    correcta: 'c'
+  }
+];
+
+// =====================================================
+// ESTADO
+// =====================================================
+let estado = {
+  grupo: '',
+  integrantes: [],
+  seccionActual: 'indicaciones',
+  respuestasMC: {},
+  pa1: '',
+  pa2: '',
+  casoOrganizacion: '',
+  casoRespuesta: '',
+  enviado: false,
+  timestamp: null
+};
+
+let guardadoTimeout = null;
+let entregaActualId = null;
+
+// =====================================================
+// INICIALIZACIÓN
+// =====================================================
+document.addEventListener('DOMContentLoaded', () => {
+  renderizarPreguntas();
+  // Intentar recuperar sesión guardada
+  const grupoGuardado = localStorage.getItem('ppyse_grupo_activo');
+  if (grupoGuardado) {
+    const datosGuardados = localStorage.getItem('ppyse_estado_' + grupoGuardado);
+    if (datosGuardados) {
+      try {
+        const datos = JSON.parse(datosGuardados);
+        if (datos.enviado) {
+          mostrarConfirmacion(grupoGuardado);
+          return;
+        }
+        estado = datos;
+        activarSesion();
+        restaurarRespuestas();
+        return;
+      } catch(e) {}
+    }
+  }
+  document.getElementById('pantalla-login').style.display = 'flex';
+});
+
+function renderizarPreguntas() {
+  const contenedor = document.getElementById('contenedor-mc');
+  PREGUNTAS_MC.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'pregunta-mc';
+    div.innerHTML = `
+      <div class="pregunta-numero">Pregunta ${i+1} de 10</div>
+      <div class="pregunta-enunciado">${p.enunciado}</div>
+      <ul class="opciones-lista">
+        ${p.opciones.map(o => `
+          <li class="opcion-item" id="opt-${p.id}-${o.letra}" onclick="seleccionarOpcion('${p.id}','${o.letra}')">
+            <div class="opcion-radio"></div>
+            <span class="opcion-letra">${o.letra})</span>
+            <span class="opcion-texto">${o.texto}</span>
+          </li>
+        `).join('')}
+      </ul>
+    `;
+    contenedor.appendChild(div);
+  });
+}
+
+// =====================================================
+// LOGIN
+// =====================================================
+function iniciarSesion() {
+  const codigo = document.getElementById('input-codigo').value.trim();
+  const int1 = document.getElementById('input-int1').value.trim();
+  const int2 = document.getElementById('input-int2').value.trim();
+  const int3 = document.getElementById('input-int3').value.trim();
+
+  if (!codigo || !int1) {
+    document.getElementById('error-login').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('error-login').style.display = 'none';
+
+  // Verificar si ya hay estado guardado para este grupo
+  const datosGuardados = localStorage.getItem('ppyse_estado_' + codigo);
+  if (datosGuardados) {
+    try {
+      const datos = JSON.parse(datosGuardados);
+      if (datos.enviado) { mostrarConfirmacion(codigo); return; }
+      estado = datos;
+      // Actualizar integrantes si no estaban
+      if (!estado.integrantes || estado.integrantes.length === 0) {
+        estado.integrantes = [int1, int2, int3].filter(Boolean);
+      }
+    } catch(e) {
+      inicializarEstado(codigo, int1, int2, int3);
+    }
+  } else {
+    inicializarEstado(codigo, int1, int2, int3);
+  }
+
+  localStorage.setItem('ppyse_grupo_activo', codigo);
+  activarSesion();
+  restaurarRespuestas();
+}
+
+function inicializarEstado(codigo, int1, int2, int3) {
+  estado = {
+    grupo: codigo,
+    integrantes: [int1, int2, int3].filter(Boolean),
+    seccionActual: 'indicaciones',
+    respuestasMC: {},
+    pa1: '', pa2: '',
+    casoOrganizacion: '', casoRespuesta: '',
+    enviado: false,
+    timestamp: new Date().toISOString()
+  };
+}
+
+function activarSesion() {
+  document.getElementById('pantalla-login').style.display = 'none';
+  document.getElementById('pantalla-principal').style.display = 'block';
+  document.getElementById('header-principal').style.display = 'block';
+  document.getElementById('nav-indice').style.display = 'block';
+  document.getElementById('header-grupo-nombre').textContent = estado.grupo;
+  document.getElementById('btn-docente-acceso').style.display = 'none';
+  irSeccion(estado.seccionActual || 'indicaciones');
+  actualizarProgreso();
+  setInterval(guardarLocal, 30000);
+}
+
+function restaurarRespuestas() {
+  // MC
+  Object.entries(estado.respuestasMC || {}).forEach(([pid, letra]) => {
+    seleccionarOpcionSilencioso(pid, letra);
+  });
+  // Abiertas
+  if (estado.pa1) document.getElementById('pa1').value = estado.pa1;
+  if (estado.pa2) document.getElementById('pa2').value = estado.pa2;
+  if (estado.casoOrganizacion) document.getElementById('caso-organizacion').value = estado.casoOrganizacion;
+  if (estado.casoRespuesta) document.getElementById('caso-respuesta').value = estado.casoRespuesta;
+  // Contadores
+  actualizarContador('pa1','cont-pa1');
+  actualizarContador('pa2','cont-pa2');
+  contarPalabrasCaso();
+}
+
+// =====================================================
+// NAVEGACIÓN
+// =====================================================
+const SECCIONES = ['indicaciones','opcion-multiple','preguntas-abiertas','estudio-caso','envio'];
+
+function irSeccion(id) {
+  SECCIONES.forEach(s => {
+    const el = document.getElementById('sec-' + s);
+    if (el) el.classList.remove('activa');
+    const btn = document.querySelector(`.nav-btn[onclick="irSeccion('${s}')"]`);
+    if (btn) btn.classList.remove('activo');
+  });
+
+  const sec = document.getElementById('sec-' + id);
+  if (sec) {
+    sec.classList.add('activa');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  const btnActivo = document.querySelector(`.nav-btn[onclick="irSeccion('${id}')"]`);
+  if (btnActivo) btnActivo.classList.add('activo');
+
+  estado.seccionActual = id;
+
+  if (id === 'envio') construirResumen();
+
+  guardarLocal();
+  actualizarProgreso();
+}
+
+function actualizarProgreso() {
+  const idxActual = SECCIONES.indexOf(estado.seccionActual);
+  const pct = Math.round(((idxActual) / (SECCIONES.length - 1)) * 100);
+  document.getElementById('barra-progreso').style.width = pct + '%';
+}
+
+// =====================================================
+// OPCIÓN MÚLTIPLE
+// =====================================================
+function seleccionarOpcion(pid, letra) {
+  // Deseleccionar anteriores
+  PREGUNTAS_MC.find(p => p.id === pid)?.opciones.forEach(o => {
+    document.getElementById(`opt-${pid}-${o.letra}`)?.classList.remove('seleccionada');
+  });
+  // Seleccionar nueva
+  document.getElementById(`opt-${pid}-${letra}`)?.classList.add('seleccionada');
+  estado.respuestasMC[pid] = letra;
+  guardarLocal();
+}
+
+function seleccionarOpcionSilencioso(pid, letra) {
+  const el = document.getElementById(`opt-${pid}-${letra}`);
+  if (el) {
+    PREGUNTAS_MC.find(p => p.id === pid)?.opciones.forEach(o => {
+      document.getElementById(`opt-${pid}-${o.letra}`)?.classList.remove('seleccionada');
+    });
+    el.classList.add('seleccionada');
+  }
+}
+
+// =====================================================
+// CONTADORES
+// =====================================================
+function actualizarContador(idArea, idContador) {
+  const texto = document.getElementById(idArea)?.value || '';
+  const palabras = texto.trim() === '' ? 0 : texto.trim().split(/\s+/).length;
+  const el = document.getElementById(idContador);
+  if (el) el.textContent = palabras + ' palabras';
+  // Guardar en estado
+  if (idArea === 'pa1') estado.pa1 = document.getElementById('pa1')?.value || '';
+  if (idArea === 'pa2') estado.pa2 = document.getElementById('pa2')?.value || '';
+}
+
+function contarPalabrasCaso() {
+  const texto = document.getElementById('caso-respuesta')?.value || '';
+  const palabras = texto.trim() === '' ? 0 : texto.trim().split(/\s+/).length;
+  const el = document.getElementById('cont-caso');
+  if (el) {
+    el.textContent = palabras + ' / 900 palabras';
+    el.classList.toggle('limite', palabras > 900);
+  }
+  estado.casoRespuesta = texto;
+  estado.casoOrganizacion = document.getElementById('caso-organizacion')?.value || '';
+}
+
+// =====================================================
+// GUARDADO LOCAL
+// =====================================================
+function guardarLocal() {
+  if (!estado.grupo) return;
+  estado.pa1 = document.getElementById('pa1')?.value || '';
+  estado.pa2 = document.getElementById('pa2')?.value || '';
+  estado.casoOrganizacion = document.getElementById('caso-organizacion')?.value || '';
+  estado.casoRespuesta = document.getElementById('caso-respuesta')?.value || '';
+
+  localStorage.setItem('ppyse_estado_' + estado.grupo, JSON.stringify(estado));
+
+  const txt = document.getElementById('guardado-texto');
+  if (txt) {
+    txt.textContent = 'Guardado ' + new Date().toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+  }
+}
+
+// =====================================================
+// RESUMEN Y ENVÍO
+// =====================================================
+function construirResumen() {
+  const mc = Object.keys(estado.respuestasMC).length;
+  const pa1 = (estado.pa1 || '').trim().split(/\s+/).filter(Boolean).length;
+  const pa2 = (estado.pa2 || '').trim().split(/\s+/).filter(Boolean).length;
+  const casoOrg = (estado.casoOrganizacion || '').trim();
+  const casoResp = (estado.casoRespuesta || '').trim().split(/\s+/).filter(Boolean).length;
+
+  const items = [
+    { label: 'Grupo', valor: estado.grupo, ok: true },
+    { label: 'Integrantes', valor: estado.integrantes.join(', '), ok: true },
+    { label: 'Opción múltiple', valor: mc + '/10 respondidas', ok: mc === 10 },
+    { label: 'Pregunta abierta 1', valor: pa1 + ' palabras', ok: pa1 > 30 },
+    { label: 'Pregunta abierta 2', valor: pa2 + ' palabras', ok: pa2 > 30 },
+    { label: 'Organización caso', valor: casoOrg || 'Sin definir', ok: casoOrg.length > 0 },
+    { label: 'Respuesta caso', valor: casoResp + ' palabras', ok: casoResp > 50 }
+  ];
+
+  const wrap = document.getElementById('resumen-envio');
+  wrap.innerHTML = items.map(it => `
+    <div class="resumen-item">
+      <span class="resumen-label">${it.label}</span>
+      <span class="resumen-valor ${it.ok ? 'ok' : 'pendiente'}">${it.valor}</span>
+    </div>
+  `).join('');
+}
+
+async function enviarParcial() {
+  const btn = document.getElementById('btn-enviar-final');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span>Enviando...';
+
+  // Calcular puntaje MC
+  let aciertos = 0;
+  PREGUNTAS_MC.forEach(p => {
+    if (estado.respuestasMC[p.id] === p.correcta) aciertos++;
+  });
+  const notaMC = parseFloat(((aciertos / 10) * 2.0).toFixed(2));
+
+  const payload = {
+    grupo: estado.grupo,
+    integrantes: estado.integrantes,
+    respuestas_mc: estado.respuestasMC,
+    aciertos_mc: aciertos,
+    nota_mc: notaMC,
+    pa1: estado.pa1,
+    pa2: estado.pa2,
+    caso_organizacion: estado.casoOrganizacion,
+    caso_respuesta: estado.casoRespuesta,
+    enviado_en: new Date().toISOString(),
+    nota_caso_ia: null,
+    nota_caso_final: null,
+    nota_final: null,
+    evaluacion_ia: null
+  };
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLA}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok || res.status === 201) {
+      estado.enviado = true;
+      guardarLocal();
+      mostrarConfirmacion(estado.grupo);
+    } else {
+      const err = await res.text();
+      throw new Error(err);
+    }
+  } catch(e) {
+    btn.disabled = false;
+    btn.innerHTML = 'Enviar parcial';
+    const errEl = document.getElementById('error-envio');
+    errEl.style.display = 'block';
+    errEl.textContent = 'Error al enviar. Verifica tu conexión a internet e intenta de nuevo. Si el problema persiste, guarda tus respuestas en otro lugar y comunícate con el docente.';
+    console.error(e);
+  }
+}
+
+function mostrarConfirmacion(grupo) {
+  document.getElementById('pantalla-login').style.display = 'none';
+  document.getElementById('pantalla-principal').style.display = 'none';
+  document.getElementById('header-principal').style.display = 'none';
+  document.getElementById('nav-indice').style.display = 'none';
+  document.getElementById('pantalla-confirmacion').style.display = 'block';
+  document.getElementById('btn-docente-acceso').style.display = 'none';
+  document.getElementById('conf-codigo').textContent = grupo;
+}
+
+// =====================================================
+// PANEL DOCENTE
+// =====================================================
+function mostrarLoginDocente() {
+  const clave = prompt('Ingrese la clave de acceso docente:');
+  if (clave === CLAVE_DOCENTE) {
+    document.getElementById('pantalla-login').style.display = 'none';
+    document.getElementById('pantalla-principal').style.display = 'none';
+    document.getElementById('pantalla-confirmacion').style.display = 'none';
+    document.getElementById('header-principal').style.display = 'none';
+    document.getElementById('nav-indice').style.display = 'none';
+    document.getElementById('pantalla-docente').style.display = 'block';
+    document.getElementById('btn-docente-acceso').style.display = 'none';
+    cargarEntregas();
+  } else if (clave !== null) {
+    alert('Clave incorrecta.');
+  }
+}
+
+function cerrarPanelDocente() {
+  document.getElementById('pantalla-docente').style.display = 'none';
+  document.getElementById('pantalla-login').style.display = 'flex';
+  document.getElementById('btn-docente-acceso').style.display = 'block';
+}
+
+async function cargarEntregas() {
+  const wrap = document.getElementById('tabla-entregas-wrap');
+  wrap.innerHTML = '<p style="font-family:\'DM Mono\',monospace; font-size:0.8rem; color:var(--texto-suave); padding:1rem;">Cargando entregas...</p>';
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLA}?select=*&order=enviado_en.asc`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY
+      }
+    });
+
+    if (!res.ok) throw new Error('Error al cargar');
+    const entregas = await res.json();
+
+    if (!entregas.length) {
+      wrap.innerHTML = '<p style="font-family:\'DM Mono\',monospace; font-size:0.8rem; color:var(--texto-suave); padding:1rem;">No hay entregas todavía.</p>';
+      return;
+    }
+
+    wrap.innerHTML = `
+      <table class="tabla-entregas">
+        <thead>
+          <tr>
+            <th>Grupo</th>
+            <th>Integrantes</th>
+            <th>Enviado</th>
+            <th>MC (${2.0})</th>
+            <th>Caso IA (${3.0})</th>
+            <th>Nota final</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${entregas.map(e => `
+            <tr>
+              <td style="font-family:'DM Mono',monospace; font-size:0.78rem;">${e.grupo}</td>
+              <td style="font-size:0.82rem;">${(e.integrantes||[]).join(', ')}</td>
+              <td style="font-family:'DM Mono',monospace; font-size:0.75rem;">${formatFecha(e.enviado_en)}</td>
+              <td style="font-family:'DM Mono',monospace; text-align:center;">${e.nota_mc ?? '—'}</td>
+              <td style="font-family:'DM Mono',monospace; text-align:center;">${e.nota_caso_final ?? (e.nota_caso_ia ? e.nota_caso_ia + '*' : '—')}</td>
+              <td style="font-family:'DM Mono',monospace; text-align:center; font-weight:bold; color:var(--rojo-oscuro);">${e.nota_final ?? '—'}</td>
+              <td>
+                <button class="btn-evaluar" onclick="abrirEntrega('${e.id}')">Ver</button>
+                ${!e.evaluacion_ia ? `<button class="btn-evaluar" onclick="evaluarConIA('${e.id}')" style="margin-left:0.3rem; background:#92400E;">IA</button>` : ''}
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+
+    // Guardar entregas en memoria para acceso rápido
+    window._entregas = entregas;
+
+  } catch(e) {
+    wrap.innerHTML = `<p style="color:var(--rojo); padding:1rem; font-size:0.85rem;">Error al cargar entregas: ${e.message}</p>`;
+  }
+}
+
+function formatFecha(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-CO') + ' ' + d.toLocaleTimeString('es-CO', {hour:'2-digit',minute:'2-digit'});
+}
+
+function abrirEntrega(id) {
+  const e = (window._entregas||[]).find(x => x.id === id);
+  if (!e) return;
+
+  entregaActualId = id;
+
+  document.getElementById('modal-grupo-titulo').textContent = e.grupo + ' — ' + (e.integrantes||[]).join(', ');
+
+  const respMC = PREGUNTAS_MC.map((p,i) => {
+    const resp = (e.respuestas_mc||{})[p.id];
+    const correcta = p.correcta;
+    const ok = resp === correcta;
+    return `<div style="font-size:0.82rem; padding:0.3rem 0; border-bottom:1px solid var(--borde); display:flex; gap:0.5rem; align-items:center;">
+      <span style="font-family:'DM Mono',monospace; font-size:0.72rem; width:70px; flex-shrink:0;">P${i+1}</span>
+      <span style="flex:1; color:var(--texto-suave);">${p.enunciado.substring(0,80)}...</span>
+      <span style="font-family:'DM Mono',monospace; font-size:0.8rem; color:${ok?'#15803D':'var(--rojo)'};">${resp||'—'} ${ok?'✓':'✗'}</span>
+    </div>`;
+  }).join('');
+
+  const contenido = `
+    <div class="respuesta-bloque">
+      <div class="respuesta-label">Opción múltiple — ${e.aciertos_mc||0}/10 correctas — Nota: ${e.nota_mc??'—'}/2.0</div>
+      <div style="background:var(--crema); padding:0.8rem 1rem; border-radius:4px; margin-top:0.5rem;">${respMC}</div>
+    </div>
+    <div class="respuesta-bloque">
+      <div class="respuesta-label">Pregunta Abierta 1</div>
+      <div class="respuesta-texto">${(e.pa1||'Sin respuesta').replace(/\n/g,'<br>')}</div>
+    </div>
+    <div class="respuesta-bloque">
+      <div class="respuesta-label">Pregunta Abierta 2</div>
+      <div class="respuesta-texto">${(e.pa2||'Sin respuesta').replace(/\n/g,'<br>')}</div>
+    </div>
+    <div class="respuesta-bloque">
+      <div class="respuesta-label">Organización analizada: ${e.caso_organizacion||'—'}</div>
+      <div class="respuesta-label" style="margin-top:0.5rem;">Respuesta estudio de caso</div>
+      <div class="respuesta-texto">${(e.caso_respuesta||'Sin respuesta').replace(/\n/g,'<br>')}</div>
+    </div>
+    ${e.evaluacion_ia ? `
+    <div class="evaluacion-ia-bloque">
+      <div class="evaluacion-ia-titulo">Evaluación IA</div>
+      <div style="font-size:0.85rem; line-height:1.6; margin-bottom:1rem;">${e.evaluacion_ia.replace(/\n/g,'<br>')}</div>
+      <div class="respuesta-label">Nota sugerida por IA (caso): ${e.nota_caso_ia??'—'}/3.0</div>
+      <div style="margin-top:1rem;">
+        <label class="respuesta-label">Nota final caso (editable)</label>
+        <input type="number" class="nota-editable" id="input-nota-caso" min="0" max="3" step="0.1" value="${e.nota_caso_final??e.nota_caso_ia??''}">
+      </div>
+      <div style="margin-top:0.8rem;">
+        <label class="respuesta-label">Nota final total (editable)</label>
+        <input type="number" class="nota-editable" id="input-nota-final" min="0" max="5" step="0.1" value="${e.nota_final??''}">
+      </div>
+    </div>` : '<div class="evaluacion-ia-bloque"><div class="evaluacion-ia-titulo">Evaluación IA pendiente</div><p style="font-size:0.85rem; color:var(--texto-suave);">Haz clic en el botón IA de la tabla para evaluar este grupo.</p></div>'}
+  `;
+
+  document.getElementById('modal-contenido').innerHTML = contenido;
+  document.getElementById('btn-guardar-nota').style.display = e.evaluacion_ia ? 'block' : 'none';
+  document.getElementById('modal-detalle').classList.add('abierto');
+}
+
+function cerrarModal() {
+  document.getElementById('modal-detalle').classList.remove('abierto');
+  entregaActualId = null;
+}
+
+async function guardarNotaDocente() {
+  if (!entregaActualId) return;
+  const notaCaso = parseFloat(document.getElementById('input-nota-caso')?.value);
+  const notaFinal = parseFloat(document.getElementById('input-nota-final')?.value);
+
+  const updates = {};
+  if (!isNaN(notaCaso)) updates.nota_caso_final = notaCaso;
+  if (!isNaN(notaFinal)) updates.nota_final = notaFinal;
+
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/${TABLA}?id=eq.${entregaActualId}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updates)
+    });
+    cerrarModal();
+    cargarEntregas();
+  } catch(e) {
+    alert('Error al guardar: ' + e.message);
+  }
+}
+
+async function evaluarConIA(id) {
+  const e = (window._entregas||[]).find(x => x.id === id);
+  if (!e) return;
+
+  const btn = document.querySelector(`[onclick="evaluarConIA('${id}')"]`);
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+
+  const prompt = `Eres un evaluador académico de ciencia política. Estás calificando el estudio de caso de un parcial universitario sobre partidos políticos y sistemas electorales.
+
+El grupo analizó la organización: "${e.caso_organizacion || 'No especificada'}"
+
+Su respuesta al estudio de caso es:
+"${e.caso_respuesta || 'Sin respuesta'}"
+
+También respondieron dos preguntas abiertas:
+PA1 (sobre los elementos de la definición de partido político): "${e.pa1 || 'Sin respuesta'}"
+PA2 (sobre el Nuevo Liberalismo y la UP): "${e.pa2 || 'Sin respuesta'}"
+
+Criterios de evaluación (escala 0 a 5.0, donde el estudio de caso vale 3.0 puntos):
+- Claridad y sostenimiento de la posición argumentativa
+- Uso real de los conceptos del curso (Sartori, Duverger, Vallès, Katz, Alcántara y Freidenberg)
+- Diálogo entre evidencia empírica y teoría
+- Identificación de tensiones o contradicciones en el caso analizado
+- Coherencia y calidad analítica general
+
+Contexto importante: los estudiantes trabajaron bajo presión de tiempo (una noche y un día). Calibra el rigor al 80%, siendo generoso con el razonamiento aunque haya imprecisiones menores, pero detecta cuando no hay aplicación conceptual real.
+
+Para las preguntas abiertas (PA1 y PA2), que en conjunto valen 0.8 puntos del componente teórico, evalúa también la calidad del razonamiento.
+
+Responde con:
+1. Un análisis breve del estudio de caso (máximo 200 palabras)
+2. Una nota sugerida para el estudio de caso (sobre 3.0, con un decimal)
+3. Un comentario breve sobre las preguntas abiertas
+4. Una nota sugerida total (MC + caso + abiertas, sobre 5.0)
+
+Formato de respuesta: texto plano sin markdown, claro y directo.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await res.json();
+    const textoIA = data.content?.[0]?.text || 'Sin respuesta de IA';
+
+    // Extraer nota sugerida del texto
+    const matchCaso = textoIA.match(/nota[^:]*caso[^:]*:\s*([\d.]+)/i) || textoIA.match(/([\d.]+)\s*\/\s*3/);
+    const matchFinal = textoIA.match(/nota[^:]*total[^:]*:\s*([\d.]+)/i) || textoIA.match(/nota[^:]*final[^:]*:\s*([\d.]+)/i);
+
+    const notaIA = matchCaso ? parseFloat(matchCaso[1]) : null;
+    const notaFinalIA = matchFinal ? parseFloat(matchFinal[1]) : null;
+
+    await fetch(`${SUPABASE_URL}/rest/v1/${TABLA}?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        evaluacion_ia: textoIA,
+        nota_caso_ia: notaIA,
+        nota_final: notaFinalIA
+      })
+    });
+
+    cargarEntregas();
+  } catch(err) {
+    if (btn) { btn.disabled = false; btn.textContent = 'IA'; }
+    alert('Error al evaluar con IA: ' + err.message);
+  }
+}
+
+// =====================================================
+// EXCEL
+// =====================================================
+function descargarExcel() {
+  const entregas = window._entregas || [];
+  if (!entregas.length) { alert('No hay entregas para descargar.'); return; }
+
+  const filas = [
+    ['Grupo','Integrante 1','Integrante 2','Integrante 3','Enviado','Aciertos MC','Nota MC (2.0)','Nota Caso IA','Nota Caso Final','Nota Final','Organización analizada']
+  ];
+
+  entregas.forEach(e => {
+    const ints = e.integrantes || [];
+    filas.push([
+      e.grupo,
+      ints[0]||'',
+      ints[1]||'',
+      ints[2]||'',
+      formatFecha(e.enviado_en),
+      e.aciertos_mc??'',
+      e.nota_mc??'',
+      e.nota_caso_ia??'',
+      e.nota_caso_final??'',
+      e.nota_final??'',
+      e.caso_organizacion||''
+    ]);
+  });
+
+  const csv = filas.map(f => f.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'parcial_ppyse_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>

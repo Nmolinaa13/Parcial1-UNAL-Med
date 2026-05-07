@@ -1888,7 +1888,7 @@ async function cargarEntregas() {
               <td style="font-family:'DM Mono',monospace; text-align:center; font-weight:bold; color:var(--rojo-oscuro);">${e.nota_final ?? '—'}</td>
               <td>
                 <button class="btn-evaluar" onclick="abrirEntrega('${e.id}')">Ver</button>
-                ${!e.evaluacion_ia ? `<button class="btn-evaluar" onclick="evaluarConIA('${e.id}')" style="margin-left:0.3rem; background:#92400E;">IA</button>` : ''}
+                <button class="btn-evaluar" onclick="copiarPromptIA('${e.id}')" style="margin-left:0.3rem; background:#92400E;">📋 Prompt</button>
               </td>
             </tr>
           `).join('')}
@@ -1999,83 +1999,43 @@ async function guardarNotaDocente() {
   }
 }
 
-async function evaluarConIA(id) {
+async function copiarPromptIA(id) {
   const e = (window._entregas||[]).find(x => x.id === id);
   if (!e) return;
+  const prompt = `Actúa como evaluador académico de un parcial universitario de Partidos Políticos y Sistemas Electorales. El grupo analizó la siguiente organización política:
 
-  const btn = document.querySelector(`[onclick="evaluarConIA('${id}')"]`);
-  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+Organización: ${e.caso_organizacion || 'No especificada'}
 
-  const prompt = `Eres un evaluador académico de ciencia política. Estás calificando el estudio de caso de un parcial universitario sobre partidos políticos y sistemas electorales.
+Respuesta estudio de caso:
+${e.caso_respuesta || 'Sin respuesta'}
 
-El grupo analizó la organización: "${e.caso_organizacion || 'No especificada'}"
+Pregunta abierta 1 (elementos de la definición de partido político):
+${e.pa1 || 'Sin respuesta'}
 
-Su respuesta al estudio de caso es:
-"${e.caso_respuesta || 'Sin respuesta'}"
+Pregunta abierta 2 (Nuevo Liberalismo y UP):
+${e.pa2 || 'Sin respuesta'}
 
-También respondieron dos preguntas abiertas:
-PA1 (sobre los elementos de la definición de partido político): "${e.pa1 || 'Sin respuesta'}"
-PA2 (sobre el Nuevo Liberalismo y la UP): "${e.pa2 || 'Sin respuesta'}"
+Aciertos opción múltiple: ${e.aciertos_mc??'?'}/10 — Nota MC: ${e.nota_mc??'?'}/2.0
 
-Criterios de evaluación (escala 0 a 5.0, donde el estudio de caso vale 3.0 puntos):
-- Claridad y sostenimiento de la posición argumentativa
-- Uso real de los conceptos del curso (Sartori, Duverger, Vallès, Katz, Alcántara y Freidenberg)
-- Diálogo entre evidencia empírica y teoría
-- Identificación de tensiones o contradicciones en el caso analizado
-- Coherencia y calidad analítica general
+Evalúa con estos criterios. El estudio de caso vale 3.0 puntos y las preguntas abiertas 0.8 puntos dentro del componente teórico. Calibra el rigor al 80%, siendo generoso con el razonamiento bajo presión de tiempo pero detectando cuando no hay aplicación conceptual real. Los conceptos clave del curso son: Sartori, Duverger, Vallès, Katz, Alcántara y Freidenberg, facción vs. partido, tipologías de partidos, ámbito interno y externo, institucionalización, financiación, reglas formales e informales.
 
-Contexto importante: los estudiantes trabajaron bajo presión de tiempo (una noche y un día). Calibra el rigor al 80%, siendo generoso con el razonamiento aunque haya imprecisiones menores, pero detecta cuando no hay aplicación conceptual real.
+Dame: análisis del caso (máximo 150 palabras), nota sugerida del caso sobre 3.0, comentario sobre las abiertas, nota final sugerida sobre 5.0.`;
 
-Para las preguntas abiertas (PA1 y PA2), que en conjunto valen 0.8 puntos del componente teórico, evalúa también la calidad del razonamiento.
+  navigator.clipboard.writeText(prompt).then(() => {
+    alert('Prompt copiado. Pégalo en Claude para evaluar el grupo ' + e.grupo);
+  }).catch(() => {
+    prompt_fallback(prompt);
+  });
+}
 
-Responde con:
-1. Un análisis breve del estudio de caso (máximo 200 palabras)
-2. Una nota sugerida para el estudio de caso (sobre 3.0, con un decimal)
-3. Un comentario breve sobre las preguntas abiertas
-4. Una nota sugerida total (MC + caso + abiertas, sobre 5.0)
-
-Formato de respuesta: texto plano sin markdown, claro y directo.`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    const data = await res.json();
-    const textoIA = data.content?.[0]?.text || 'Sin respuesta de IA';
-
-    // Extraer nota sugerida del texto
-    const matchCaso = textoIA.match(/nota[^:]*caso[^:]*:\s*([\d.]+)/i) || textoIA.match(/([\d.]+)\s*\/\s*3/);
-    const matchFinal = textoIA.match(/nota[^:]*total[^:]*:\s*([\d.]+)/i) || textoIA.match(/nota[^:]*final[^:]*:\s*([\d.]+)/i);
-
-    const notaIA = matchCaso ? parseFloat(matchCaso[1]) : null;
-    const notaFinalIA = matchFinal ? parseFloat(matchFinal[1]) : null;
-
-    await fetch(`${SUPABASE_URL}/rest/v1/${TABLA}?id=eq.${id}`, {
-      method: 'PATCH',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        evaluacion_ia: textoIA,
-        nota_caso_ia: notaIA,
-        nota_final: notaFinalIA
-      })
-    });
-
-    cargarEntregas();
-  } catch(err) {
-    if (btn) { btn.disabled = false; btn.textContent = 'IA'; }
-    alert('Error al evaluar con IA: ' + err.message);
-  }
+function prompt_fallback(texto) {
+  const ta = document.createElement('textarea');
+  ta.value = texto;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  alert('Prompt copiado al portapapeles.');
 }
 
 // =====================================================
